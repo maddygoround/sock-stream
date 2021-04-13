@@ -1,19 +1,19 @@
-'use strict';
+"use strict";
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const video = document.querySelector('video');
-  const startBtn = document.getElementById('start-btn');
-  const stopBtn = document.getElementById('stop-btn');
-  const startControls = document.getElementById('start-controls');
-  const endControls = document.getElementById('end-controls');
+document.addEventListener("DOMContentLoaded", async () => {
+  const video = document.querySelector("video");
+  const startBtn = document.getElementById("start-btn");
+  const stopBtn = document.getElementById("stop-btn");
+  const startControls = document.getElementById("start-controls");
+  const endControls = document.getElementById("end-controls");
   const constraints = {
     audio: true,
     video: true,
   };
   let websocket = null;
   let mediaRecorder = null;
-  let streamKey = '';
-  const wsUrl = 'ws://localhost:8080/api/v0/stream';
+  let streamKey = "";
+  const wsUrl = `ws://${window.location.hostname}:${window.location.port}/api/v0/stream`;
 
   const initCamera = async (constraints, videoEl) => {
     try {
@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       videoEl.srcObject = stream;
 
       const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'video/webm;codecs=h264',
-        bitsPerSecond: 256 * 8 * 1024
+        mimeType: "video/webm;codecs=h264",
+        bitsPerSecond: 256 * 8 * 128,
       });
 
       return mediaRecorder;
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   const connect = (url, streamKey) => {
-    const ws = new WebSocket(url, ['streamKey', streamKey]);
+    const ws = new WebSocket(url, ["streamKey", streamKey]);
 
     ws.onopen = (event) => {
       console.log(`Connection opened: ${JSON.stringify(event)}`);
@@ -43,7 +43,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     ws.onerror = (event) => {
-      console.log(`An error occurred with websockets: ${JSON.stringify(event)}`);
+      console.log(
+        `An error occurred with websockets: ${JSON.stringify(event)}`
+      );
     };
 
     return ws;
@@ -51,21 +53,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const toggleControls = (livestreamStarted) => {
     if (livestreamStarted) {
-      startControls.classList.add('hide');
-      endControls.classList.remove('hide');
+      startControls.classList.add("hide");
+      endControls.classList.remove("hide");
     } else {
-      startControls.classList.remove('hide');
-      endControls.classList.add('hide');
+      startControls.classList.remove("hide");
+      endControls.classList.add("hide");
     }
   };
 
-  startBtn.addEventListener('click', async () => {
+  startBtn.addEventListener("click", async () => {
     try {
-      const streamKeyInput = document.getElementById('stream-key-input');
+      const streamKeyInput = document.getElementById("stream-key-input");
       const streamKey = streamKeyInput.value;
 
-      if (streamKey.trim() === '') {
-        alert('Please enter a valid stream key!');
+      if (streamKey.trim() === "") {
+        alert("Please enter a valid stream key!");
         return;
       }
 
@@ -79,11 +81,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      mediaRecorder.addEventListener('dataavailable', (e) => {
+      mediaRecorder.addEventListener("dataavailable", (e) => {
         websocket.send(e.data);
       });
 
-      mediaRecorder.addEventListener('stop', () => {
+      mediaRecorder.addEventListener("stop", () => {
         websocket.close();
         websocket = null;
         toggleControls(false);
@@ -95,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  stopBtn.addEventListener('click', async () => {
+  stopBtn.addEventListener("click", async () => {
     try {
       mediaRecorder.stop();
       toggleControls(false);

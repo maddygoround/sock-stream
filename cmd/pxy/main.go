@@ -11,7 +11,7 @@ import (
 const (
 	readBufferSize  = 1024
 	writeBufferSize = 1024
-	publishURL      = "rtmp://global-live.mux.com:5222/app"
+	publishURL      = "rtmps://rtmp-global.transcode.co/app"
 )
 
 var (
@@ -21,7 +21,7 @@ var (
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8082"
 	}
 
 	livestreamPool := websockets.NewLivestreamPool(
